@@ -1,0 +1,285 @@
+<title>Regras de Condomínio nos Anúncios</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@600;700;800&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: uma coluna de leitura (~760px), blocos por etapa: problema → números → retornos → piloto → próximos passos */
+:root {
+  --bg: #f6f8f8;
+  --surface: #ffffff;
+  --fg: #16232a;
+  --muted: #5a6b72;
+  --line: #d8e1e3;
+  --accent: #0f6b74;
+  --accent-soft: #e2f0f1;
+  --good: #1f7a46;
+  --good-soft: #e3f3e9;
+  --warn: #9a5b00;
+  --warn-soft: #fbefd9;
+  --bad: #a8322d;
+  --bad-soft: #f8e3e1;
+  --f-display: "Libre Franklin", "Segoe UI", system-ui, sans-serif;
+  --f-body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1719; --surface: #162226; --fg: #e3ecee; --muted: #94a7ad; --line: #27383d;
+    --accent: #5cc0c9; --accent-soft: #163a3e;
+    --good: #6fd19a; --good-soft: #17342a; --warn: #f0b75c; --warn-soft: #3a2c14; --bad: #f08a83; --bad-soft: #3d1f1d;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1719; --surface: #162226; --fg: #e3ecee; --muted: #94a7ad; --line: #27383d;
+  --accent: #5cc0c9; --accent-soft: #163a3e;
+  --good: #6fd19a; --good-soft: #17342a; --warn: #f0b75c; --warn-soft: #3a2c14; --bad: #f08a83; --bad-soft: #3d1f1d;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg);
+  font: 16px/1.6 var(--f-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 40px 64px;
+}
+main { max-width: 780px; margin: 0 auto; display: grid; gap: 44px; }
+h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; margin: 0; line-height: 1.2; }
+h1 { font-size: clamp(1.7rem, 4.5vw, 2.3rem); font-weight: 800; letter-spacing: -0.01em; }
+h2 { font-size: 1.3rem; font-weight: 700; }
+h3 { font-size: 1rem; font-weight: 700; }
+p { margin: 0; }
+a { color: var(--accent); }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.eyebrow { font-size: .75rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+.meta { color: var(--muted); font-size: .9rem; }
+section { display: grid; gap: 16px; }
+.lead { font-size: 1.1rem; max-width: 65ch; }
+header { display: grid; gap: 12px; border-bottom: 1px solid var(--line); padding-bottom: 28px; }
+.code { font-family: var(--f-mono); font-size: .88em; font-weight: 500; }
+.num { font-variant-numeric: tabular-nums; }
+
+/* faixa de status */
+.status { display: flex; flex-wrap: wrap; gap: 8px; }
+.pill { font-size: .8rem; font-weight: 600; padding: 3px 10px; border-radius: 99px; }
+.pill.good { background: var(--good-soft); color: var(--good); }
+.pill.warn { background: var(--warn-soft); color: var(--warn); }
+.pill.acc { background: var(--accent-soft); color: var(--accent); }
+
+/* antes x depois */
+.compare { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 16px; }
+.period { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px 20px; display: grid; gap: 10px; }
+.period .big { font-family: var(--f-display); font-size: 2.2rem; font-weight: 800; line-height: 1; }
+.period.before .big { color: var(--bad); }
+.period.after .big { color: var(--good); }
+.bar { height: 8px; background: var(--line); border-radius: 4px; overflow: hidden; }
+.bar span { display: block; height: 100%; }
+.period.before .bar span { width: 0%; }
+.period.after .bar span { width: 80%; background: var(--good); }
+.kv { display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; font-size: .92rem; }
+.kv dt { color: var(--muted); }
+.kv dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px 24px; padding: 0; margin: 0; list-style: none; }
+.facts li { display: grid; gap: 2px; }
+.facts b { font-family: var(--f-display); font-size: 1.25rem; font-variant-numeric: tabular-nums; }
+.facts span { color: var(--muted); font-size: .9rem; }
+
+/* retornos */
+.replies { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+.reply { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px 20px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.reply .who { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.reply ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
+.reply .verdict { font-weight: 700; color: var(--good); }
+
+/* texto aprovado */
+.quote { background: var(--accent-soft); border-radius: 10px; padding: 18px 22px; display: grid; gap: 8px; }
+.quote ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+.rules { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px 24px; font-size: .95rem; }
+.rules div { display: flex; gap: 8px; }
+.rules .yes { color: var(--good); font-weight: 700; }
+.rules .no { color: var(--bad); font-weight: 700; }
+
+/* tabela */
+.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: .93rem; min-width: 560px; }
+th, td { text-align: left; padding: 9px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: .74rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 700; background: var(--bg); }
+td.r, th.r { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+tbody tr:last-child td { border-bottom: 0; }
+tfoot td { font-weight: 700; border-top: 2px solid var(--line); border-bottom: 0; }
+.flag { font-size: .74rem; font-weight: 700; padding: 1px 7px; border-radius: 99px; background: var(--warn-soft); color: var(--warn); white-space: nowrap; }
+.note { font-size: .9rem; color: var(--muted); max-width: 70ch; }
+.out { font-size: .95rem; }
+
+/* próximos passos (sequência real) */
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; counter-reset: s; }
+.steps li { counter-increment: s; display: grid; grid-template-columns: 34px 1fr; gap: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+.steps li::before { content: counter(s); font-family: var(--f-display); font-weight: 800; width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: var(--surface); display: grid; place-items: center; font-size: .95rem; }
+.steps .body { display: grid; gap: 4px; min-width: 0; }
+.steps .owner { font-size: .85rem; color: var(--muted); }
+
+.attention { border-left: 3px solid var(--warn); padding: 4px 0 4px 16px; display: grid; gap: 8px; }
+.attention ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
+footer { border-top: 1px solid var(--line); padding-top: 20px; font-size: .85rem; color: var(--muted); display: grid; gap: 6px; }
+</style>
+
+<main>
+  <header>
+    <span class="eyebrow">BackOffice de Danos · Franquias</span>
+    <h1>Regras de condomínio nos anúncios do Airbnb</h1>
+    <p class="lead">Vamos acrescentar as regras do condomínio no fim das <strong>Regras da casa</strong> dos anúncios. O objetivo é que o Airbnb pare de negar o reembolso de multas alegando que a regra "não estava no anúncio". Anúncios (Lari) e RM (Fábio) aprovaram. A mudança começa por um piloto em 21 imóveis.</p>
+    <div class="status">
+      <span class="pill good">Anúncios aprovou</span>
+      <span class="pill good">RM aprovou</span>
+      <span class="pill acc">Piloto: 21 imóveis</span>
+      <span class="pill warn">Aguardando execução</span>
+    </div>
+    <p class="meta">Atualizado em 20/10/2026 · Fontes: Sapron, levantamento de multas de 06/10/2026 e conversas no Slack de 15 e 16/10/2026</p>
+  </header>
+
+  <section>
+    <span class="eyebrow">O problema</span>
+    <h2>O hóspede não paga e o Airbnb diz que a regra não estava no anúncio</h2>
+    <p>Cobramos as multas de condomínio pela Central de Resoluções do Airbnb. Quando o hóspede se recusa a pagar, o Airbnb costuma negar o reembolso porque a regra não aparecia no anúncio. Às vezes conseguimos reverter, mas muitas vezes só em parte. No MTR1002, por exemplo, a multa foi de R$ 1.771,95 e só R$ 259,81 voltaram.</p>
+  </section>
+
+  <section>
+    <span class="eyebrow">O levantamento</span>
+    <h2>32 multas em 12 meses, menos da metade recuperada</h2>
+    <ul class="facts">
+      <li><b class="num">R$ 27.661</b><span>em 32 multas de condomínio (out/25 a out/26, só Airbnb)</span></li>
+      <li><b class="num">R$ 10.053</b><span>recuperados, 44% dos 27 casos encerrados</span></li>
+      <li><b class="num">R$ 12.973</b><span>ficaram com o proprietário</span></li>
+      <li><b class="num">R$ 4.635</b><span>ainda em aberto (5 casos)</span></li>
+    </ul>
+    <div class="compare">
+      <div class="period before">
+        <span class="eyebrow">Até mar/2026 · cobrança direta + jurídico</span>
+        <span class="big num">0%</span>
+        <div class="bar"><span></span></div>
+        <dl class="kv"><dt>Casos encerrados</dt><dd>13</dd><dt>Valor das multas</dt><dd>R$ 10.503,77</dd><dt>Recuperado</dt><dd>R$ 0,00</dd></dl>
+      </div>
+      <div class="period after">
+        <span class="eyebrow">De abr/2026 em diante · pelo Airbnb</span>
+        <span class="big num">80%</span>
+        <div class="bar"><span></span></div>
+        <dl class="kv"><dt>Casos encerrados</dt><dd>14</dd><dt>Valor das multas</dt><dd>R$ 12.522,52</dd><dt>Recuperado</dt><dd>R$ 10.052,92</dd></dl>
+      </div>
+    </div>
+    <p>A cobrança pelo Airbnb é o único caminho que trouxe dinheiro de volta, e o Airbnb pagou 85% do que voltou. Nas multas maiores, ele costuma pagar só de 60% a 80%. A multa mais frequente é de <strong>barulho</strong> (10 casos). A que mais custa é de <strong>piscina e áreas comuns</strong> (R$ 8,2 mil). Depois vêm visitas na portaria, garagem e lixo.</p>
+    <p><a href="https://claude.ai/artifact/XnVBU8qsRwucuWJx6ubYv7?sk=lnocqBHv1kIO0fDHYo_aTg">Abrir o levantamento completo de multas →</a></p>
+  </section>
+
+  <section>
+    <span class="eyebrow">Retorno das áreas</span>
+    <h2>Anúncios e RM concordam: entra no fim das Regras da casa</h2>
+    <div class="replies">
+      <article class="reply">
+        <div class="who"><h3>Lari · Anúncios</h3><span class="meta">16/10</span></div>
+        <p class="verdict">Dá para fazer.</p>
+        <ul>
+          <li>Todos os anúncios têm um texto padrão de Regras da casa, em PT, ES e EN, que vai para as OTAs. Ele já diz que festa e som alto estão sujeitos a multa e que as multas são do hóspede.</li>
+          <li>Falta incluir as regras do condomínio. A proposta é somar 3 ou 4 linhas curtas nesse mesmo texto, sem mexer no título nem na descrição.</li>
+          <li>A execução fica com o <strong>Weslley</strong>, do time de Anúncios. O levantamento serve para priorizar as regras que mais geram multa.</li>
+        </ul>
+        <a href="https://seazone-fund.slack.com/archives/C0C9B5E0YRZ/p1792159433600499">Ver no Slack</a>
+      </article>
+      <article class="reply">
+        <div class="who"><h3>Fábio · RM</h3><span class="meta">16/10</span></div>
+        <p class="verdict">Faz sentido seguir. O risco comercial é baixo.</p>
+        <ul>
+          <li>O hóspede lê as Regras da casa quando já está decidindo, e o "sujeito a multa" já aparece hoje.</li>
+          <li>A frase genérica já está nos anúncios. Faltam as regras específicas, e é nisso que o Airbnb se apoia para negar.</li>
+          <li>Hoje não há dado de conversão por anúncio. Por isso ele sugere começar pelos imóveis que já tiveram multa e acompanhar por 30 a 60 dias.</li>
+          <li>A mensagem de check-in ajuda e não afeta a conversão, mas não substitui o anúncio na discussão com o Airbnb.</li>
+        </ul>
+        <a href="https://seazone-fund.slack.com/archives/C0C9FESU6G6/p1792160959014599?thread_ts=1792069476.590559">Ver no Slack</a>
+      </article>
+    </div>
+    <div class="rules">
+      <div><span class="yes">✓</span><span>No fim das Regras da casa, mantendo o texto atual</span></div>
+      <div><span class="yes">✓</span><span>Frases curtas e objetivas</span></div>
+      <div><span class="no">✕</span><span>Nada no título, no início da descrição ou nas fotos</span></div>
+      <div><span class="no">✕</span><span>Sem tom de ameaça e sem valores de multa</span></div>
+    </div>
+  </section>
+
+  <section>
+    <span class="eyebrow">Texto a incluir</span>
+    <h2>Cinco linhas no fim das Regras da casa</h2>
+    <div class="quote">
+      <ul>
+        <li>Piscina, academia e demais áreas comuns seguem o regulamento do condomínio (horários e regras próprios);</li>
+        <li>Use apenas a vaga indicada para o imóvel. Não é permitido carregar veículos elétricos na energia do condomínio sem autorização;</li>
+        <li>Descarte o lixo apenas nos locais indicados pelo condomínio;</li>
+        <li>Não é permitida a entrada de visitantes. O acesso não autorizado ou sem cadastro na portaria poderá gerar multa repassada ao hóspede;</li>
+        <li>Multas aplicadas pelo condomínio por descumprimento dessas regras serão repassadas ao hóspede.</li>
+      </ul>
+    </div>
+    <p class="note">Parte da proposta do Fábio, que junta as 4 linhas da Lari com lixo e visitas, que estão entre os tipos de multa mais frequentes. A linha de visitantes foi ajustada pelo Backoffice de Danos. Barulho já está coberto pelo texto padrão.</p>
+  </section>
+
+  <section>
+    <span class="eyebrow">Piloto</span>
+    <h2>21 imóveis que serão alterados e acompanhados</h2>
+    <p>São os imóveis ativos que tiveram multa de condomínio nos últimos 12 meses. Juntos, somam 23 multas e R$ 18.215,09.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Imóvel</th><th>Cidade</th><th>Tipo de multa</th><th class="r">Multas</th><th class="r">Valor</th></tr></thead>
+        <tbody>
+          <tr><td class="code">IPC0902</td><td>Balneário Camboriú</td><td>Segurança do prédio</td><td class="r">2</td><td class="r">R$ 3.139,00</td></tr>
+          <tr><td class="code">MNS0701</td><td>Balneário Camboriú</td><td>Barulho</td><td class="r">1</td><td class="r">R$ 810,50</td></tr>
+          <tr><td class="code">ALE0803</td><td>Balneário Piçarras</td><td>Piscina</td><td class="r">1</td><td class="r">R$ 537,88</td></tr>
+          <tr><td class="code">CSI0706</td><td>Balneário Piçarras</td><td>Garagem</td><td class="r">1</td><td class="r">R$ 399,85</td></tr>
+          <tr><td class="code">VAC0704</td><td>Barra Velha</td><td>Visitas na portaria + piscina</td><td class="r">2</td><td class="r">R$ 1.008,58</td></tr>
+          <tr><td class="code">SRU0505</td><td>Campinas</td><td>Piscina</td><td class="r">1</td><td class="r">R$ 2.244,00</td></tr>
+          <tr><td class="code">LGD0201</td><td>Florianópolis</td><td>Áreas comuns</td><td class="r">1</td><td class="r">R$ 815,80</td></tr>
+          <tr><td class="code">PON0302</td><td>Florianópolis</td><td>Barulho</td><td class="r">1</td><td class="r">R$ 1.387,38</td></tr>
+          <tr><td class="code">SLR0208</td><td>Florianópolis</td><td>Barulho</td><td class="r">1</td><td class="r">R$ 693,04</td></tr>
+          <tr><td class="code">RHL0305</td><td>Florianópolis <span class="flag">sem código Stays</span></td><td>Garagem</td><td class="r">1</td><td class="r">R$ 455,40</td></tr>
+          <tr><td class="code">TDB0101</td><td>Florianópolis <span class="flag">sem código Stays</span></td><td>Sala de jogos</td><td class="r">1</td><td class="r">R$ 300,00</td></tr>
+          <tr><td class="code">FTM0401</td><td>Florianópolis <span class="flag">sem código Stays</span></td><td>Barulho</td><td class="r">1</td><td class="r">R$ 137,63</td></tr>
+          <tr><td class="code">LAR0406</td><td>Gramado</td><td>Visitas na portaria + barulho</td><td class="r">1</td><td class="r">R$ 612,74</td></tr>
+          <tr><td class="code">PZO0908</td><td>Ilhéus</td><td>Garagem (carro elétrico)</td><td class="r">1</td><td class="r">R$ 294,01</td></tr>
+          <tr><td class="code">JKC0504</td><td>Itajaí</td><td>Lixo e sujeira</td><td class="r">1</td><td class="r">R$ 958,34</td></tr>
+          <tr><td class="code">TDF0302</td><td>Itapema</td><td>Lixo na garagem</td><td class="r">1</td><td class="r">R$ 432,00</td></tr>
+          <tr><td class="code">REB0802</td><td>Itapema</td><td>Barulho</td><td class="r">1</td><td class="r">R$ 379,40</td></tr>
+          <tr><td class="code">VLL0001</td><td>Maraú <span class="flag">sem código Stays</span></td><td>Barulho</td><td class="r">1</td><td class="r">R$ 873,22</td></tr>
+          <tr><td class="code">VLL0002</td><td>Maraú <span class="flag">sem código Stays</span></td><td>Barulho</td><td class="r">1</td><td class="r">R$ 436,61</td></tr>
+          <tr><td class="code">MTR1002</td><td>Porto Belo</td><td>Piscina</td><td class="r">1</td><td class="r">R$ 1.771,95</td></tr>
+          <tr><td class="code">CLE1203</td><td>Porto Belo <span class="flag">sem código Stays</span></td><td>Barulho</td><td class="r">1</td><td class="r">R$ 527,76</td></tr>
+        </tbody>
+        <tfoot><tr><td colspan="3">21 imóveis</td><td class="r">23</td><td class="r">R$ 18.215,09</td></tr></tfoot>
+      </table>
+    </div>
+    <p class="out"><strong>Fora do piloto por estarem inativos no Sapron (9):</strong> <span class="code">BOO0301, ENC0307, ESB0310, RCQ0305, RHL0302, SBN0705, SOL0404, VOD0000, WJA0607</span>.</p>
+    <p class="note"><strong>O que vamos acompanhar:</strong> ocupação e antecedência das reservas desses 21 imóveis em comparação com a categoria, por 30 a 60 dias a partir da alteração. Se não houver queda, a mudança vai para os demais imóveis em condomínio.</p>
+  </section>
+
+  <section>
+    <span class="eyebrow">Próximos passos</span>
+    <h2>O que falta para colocar no ar</h2>
+    <ol class="steps">
+      <li><div class="body"><h3>Alterar as Regras da casa dos 21 imóveis</h3><p>Enviar ao Weslley o texto de cinco linhas e a lista do piloto. Combinar o prazo e quem traduz para ES e EN.</p><span class="owner">Com: Weslley (Anúncios)</span></div></li>
+      <li><div class="body"><h3>Reforçar as regras na mensagem de check-in</h3><p>Incluir as mesmas regras na mensagem enviada ao hóspede no check-in. Isso não afeta a conversão, porque o hóspede já reservou.</p><span class="owner">Com: Lari (Anúncios)</span></div></li>
+      <li><div class="body"><h3>Avisar o RM quando estiver no ar</h3><p>A data da alteração marca o início dos 30 a 60 dias de acompanhamento de ocupação e antecedência.</p><span class="owner">Com: Fábio (RM)</span></div></li>
+      <li><div class="body"><h3>Decidir a expansão</h3><p>Com o resultado do piloto, decidir se a mudança vai para todos os imóveis em condomínio.</p><span class="owner">Com: Backoffice de Danos + RM</span></div></li>
+    </ol>
+  </section>
+
+  <section class="attention">
+    <h3>Pontos de atenção</h3>
+    <ul>
+      <li>O <span class="code">ALE0803</span> aparece como ativo no Sapron, mas tem data de inativação de 09/02/2026. Provavelmente foi reativado. Vale confirmar.</li>
+      <li>O <span class="code">MTR1002</span> aparece "em andamento" no levantamento de 06/10. O valor de R$ 259,81 recuperado é posterior.</li>
+      <li>Se uma multa nova surgir em outro imóvel durante o piloto, ele pode entrar na lista.</li>
+    </ul>
+  </section>
+
+  <footer>
+    <span>Levantamento: leitura de 161 lançamentos do Sapron (06/10/2025 a 06/10/2026), reservas Airbnb.</span>
+    <span>Status dos imóveis: consulta ao Sapron em 16/10/2026.</span>
+  </footer>
+</main>
